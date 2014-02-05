@@ -3,6 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+
+            <!-- workaround for a bug -->
+            <Style TargetType="{x:Type Rectangle}" />
+
+            <ResourceDictionary.MergedDictionaries>
+
+                <!-- Load the main resource dictionary -->
+                <ResourceDictionary Source="ResourceDictionaries/ResourceLibrary.xaml" />
+
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
