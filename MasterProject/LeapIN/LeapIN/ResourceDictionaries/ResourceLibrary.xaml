@@ -9,7 +9,7 @@
         <!-- Brushes -->
         
         <!-- Control Styles -->
-        
+        <ResourceDictionary Source="ControlStyles/WindowStyle.xaml"/>
 
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
