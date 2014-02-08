@@ -135,13 +135,13 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LeapLibs\Leap.dll">
+    <Content Include="Leap.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="LeapLibs\LeapCSharp.dll">
+    <Content Include="LeapCSharp.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="LeapLibs\LeapCSharp.NET3.5.dll" />
+    <Content Include="LeapCSharp.NET3.5.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
