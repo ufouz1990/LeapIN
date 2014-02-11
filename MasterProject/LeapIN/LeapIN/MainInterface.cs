@@ -8,7 +8,7 @@ using System.Windows.Media;
 using System.Windows.Ink;
 
 using Leap;
-using System.Runtime.InteropServices;
+using LeapIN.Extras;
 
 
 namespace LeapIN
@@ -23,6 +23,7 @@ namespace LeapIN
         Controller leap;
         double windowWidth;
         double windowHeight;
+        bool eventOccurred = true;
 
         public MainInterface()
         {
@@ -36,10 +37,6 @@ namespace LeapIN
             // Add event to update frame with pointer position
             CompositionTarget.Rendering += UpdateFrame;
         }
-
-        // Required system win32 API call to move the cursor
-        [DllImport("user32.dll")]
-        private static extern bool SetCursorPos(int x, int y);
 
         protected void UpdateFrame(object sender, EventArgs e)
         {
@@ -55,9 +52,20 @@ namespace LeapIN
             double ty = windowHeight - normalizedPosition.y * windowHeight;
 
             // Allows use of mouse normally
-            if (pointable.TouchDistance > 0 && pointable.TouchZone != Pointable.Zone.ZONENONE)
+            if (pointable.TouchZone != Pointable.Zone.ZONENONE)
             {
-                SetCursorPos((int)tx, (int)ty);
+                Win32Services.MoveCursor((int)tx, (int)ty);
+
+                if (pointable.TouchDistance <= 0 && eventOccurred) // Inside the 'touch zone'
+                {
+                    // perform mouse click - this will change once on screen buttons are developed for making double clicks and right clicks
+                    Win32Services.MouseClick((uint)tx, (uint)ty);
+                    eventOccurred = false;
+                }
+                else if (pointable.TouchDistance > 0)
+                {
+                    eventOccurred = true;
+                }
             }
         }
     }
