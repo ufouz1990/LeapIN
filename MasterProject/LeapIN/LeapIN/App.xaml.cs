@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
 using System.Windows;
+using LeapIN.ControlPanel;
 
 namespace LeapIN
 {
@@ -12,13 +9,13 @@ namespace LeapIN
     /// </summary>
     public partial class App : Application
     {
+        // Entry point for the application
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            MainWindow app = new MainWindow();
-            MainInterface context = new MainInterface();
-            app.DataContext = context;
+            // Create the control panel and show it
+            ControlWindow app = new ControlWindow();
             app.Show();
         }
     }
