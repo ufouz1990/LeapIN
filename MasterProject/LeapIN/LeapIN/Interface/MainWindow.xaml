@@ -1,0 +1,18 @@
+﻿<Window x:Class="LeapIN.Interface.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow">
+    <Window.Style>
+        <Binding Mode="OneWay" Source="{StaticResource BlankWindowStyle}"/>
+    </Window.Style>
+    
+    <Grid>
+        <Border Background="Black" Height="150" Width="250" HorizontalAlignment="Left" VerticalAlignment="Top" >
+            <StackPanel Margin="5">
+                <TextBlock Text="Tracking Data" Foreground="White" />
+                <TextBlock Text="{Binding Path=xPos, StringFormat='X Position: {0}'}" Foreground="White" />
+                <TextBlock Text="{Binding Path=yPos, StringFormat='Y Position: {0}'}" Foreground="White" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

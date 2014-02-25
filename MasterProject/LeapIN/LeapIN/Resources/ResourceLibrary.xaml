@@ -9,7 +9,9 @@
         <!-- Brushes -->
         
         <!-- Control Styles -->
-        <ResourceDictionary Source="ControlStyles/WindowStyle.xaml"/>
+        <ResourceDictionary Source="ControlStyles/BlankWindowStyle.xaml"/>
+
+        <ResourceDictionary Source="ControlStyles/ButtonStyle.xaml"/>
 
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

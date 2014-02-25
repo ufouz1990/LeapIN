@@ -10,7 +10,7 @@
             <ResourceDictionary.MergedDictionaries>
 
                 <!-- Load the main resource dictionary -->
-                <ResourceDictionary Source="ResourceDictionaries/ResourceLibrary.xaml" />
+                <ResourceDictionary Source="Resources/ResourceLibrary.xaml" />
 
             </ResourceDictionary.MergedDictionaries>
 

@@ -52,9 +52,10 @@
     <Reference Include="LeapCSharp.NET3.5, Version=0.0.0.0, Culture=neutral, PublicKeyToken=6e1b1368e71eba9b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>LeapLibs\LeapCSharp.NET3.5.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -69,8 +70,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Win32Services.cs" />
-    <Page Include="MainWindow.xaml">
+    <Compile Include="ControlPanel\ControlPanel.cs" />
+    <Compile Include="ControlPanel\ControlWindow.xaml.cs">
+      <DependentUpon>ControlWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Interface\Win32Services.cs" />
+    <Page Include="ControlPanel\ControlWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Interface\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -81,17 +90,21 @@
     <Compile Include="Extras\ExampleSource.cs" />
     <Compile Include="Extras\PropertyChange.cs" />
     <Compile Include="Extras\RelayCommand.cs" />
-    <Compile Include="LeapControl.cs" />
-    <Compile Include="MainInterface.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Interface\LeapControl.cs" />
+    <Compile Include="Interface\MainInterface.cs" />
+    <Compile Include="Interface\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="ResourceDictionaries\ControlStyles\WindowStyle.xaml">
+    <Page Include="Resources\ControlStyles\BlankWindowStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ResourceDictionaries\ResourceLibrary.xaml">
+    <Page Include="Resources\ControlStyles\ButtonStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\ResourceLibrary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -114,6 +127,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -121,7 +137,7 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ResourceDictionaries\Brushes\" />
+    <Folder Include="Resources\Brushes\" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -136,14 +152,16 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Leap.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Resource Include="Resources\Cursors\main.cur" />
+    <Content Include="lib\Leap.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="LeapCSharp.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="lib\LeapCSharp.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="LeapCSharp.NET3.5.dll" />
-    <Resource Include="Cursors\Idle.cur" />
+    <Content Include="lib\LeapCSharp.NET3.5.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
