@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows;
+using System.Windows.Interop;
 
 namespace LeapIN.Interface
 {
@@ -18,6 +19,7 @@ namespace LeapIN.Interface
             MainInterface context = new MainInterface();
             this.DataContext = context;
 
+            this.SourceInitialized += Window_SourceInitialized;
             this.Loaded += context.EnableListener;
             this.Unloaded += context.DisableListener;
             this.Closing += Window_Closing;
@@ -29,6 +31,12 @@ namespace LeapIN.Interface
             this.Closing -= Window_Closing;
             this.DataContext = null;
             GC.Collect();
+        }
+
+        void Window_SourceInitialized(object sender, EventArgs e)
+        {
+            IntPtr handle = (new WindowInteropHelper(this)).Handle;
+            Win32Services.SetupWindow(handle);
         }
     }
 }

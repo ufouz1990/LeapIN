@@ -12,6 +12,7 @@
         <ResourceDictionary Source="ControlStyles/BlankWindowStyle.xaml"/>
 
         <ResourceDictionary Source="ControlStyles/ButtonStyle.xaml"/>
+        <ResourceDictionary Source="ControlStyles/TabItemStyle.xaml"/>
 
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

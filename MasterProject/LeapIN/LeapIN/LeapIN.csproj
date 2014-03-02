@@ -74,6 +74,7 @@
     <Compile Include="ControlPanel\ControlWindow.xaml.cs">
       <DependentUpon>ControlWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Extras\MouseBehaviour.cs" />
     <Compile Include="Interface\Win32Services.cs" />
     <Page Include="ControlPanel\ControlWindow.xaml">
       <SubType>Designer</SubType>
@@ -101,6 +102,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\ControlStyles\ButtonStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\ControlStyles\TabItemStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
