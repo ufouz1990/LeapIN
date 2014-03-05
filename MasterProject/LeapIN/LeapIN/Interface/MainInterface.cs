@@ -43,6 +43,8 @@ namespace LeapIN.Interface
         {
             Single,
             Double,
+            ScrollUp,
+            ScrollDown,
             Drag,
             Right
         }
@@ -105,7 +107,6 @@ namespace LeapIN.Interface
                 if (mouseOverControl != value)
                 {
                     mouseOverControl = value;
-                    OnPropertyChanged("MouseOverControl");
                 }
             }
         }
@@ -131,6 +132,14 @@ namespace LeapIN.Interface
                     Mode = "Double Click";
                     break;
                 case ClickMode.Double:
+                    currentMode = ClickMode.ScrollUp;
+                    Mode = "Scroll Up";
+                    break;
+                case ClickMode.ScrollUp:
+                    currentMode = ClickMode.ScrollDown;
+                    Mode = "Scroll Down";
+                    break;
+                case ClickMode.ScrollDown:
                     currentMode = ClickMode.Drag;
                     Mode = "Drag Click";
                     break;
@@ -219,9 +228,9 @@ namespace LeapIN.Interface
                             {
                                 MouseEvent();
                             }
-
-                            touching = true;
                         }
+
+                        touching = true;
                     }
                 }
                 else
@@ -265,6 +274,14 @@ namespace LeapIN.Interface
                 case ClickMode.Single:
                     Win32Services.MouseClick(Win32Services.MouseEventFlags.LEFTDOWN | Win32Services.MouseEventFlags.LEFTUP);
                     break;
+                case ClickMode.ScrollUp:
+                    Win32Services.MouseClick(Win32Services.MouseEventFlags.LEFTDOWN | Win32Services.MouseEventFlags.LEFTUP);
+                    MouseScrollUp();
+                    break;
+                case ClickMode.ScrollDown:
+                    Win32Services.MouseClick(Win32Services.MouseEventFlags.LEFTDOWN | Win32Services.MouseEventFlags.LEFTUP);
+                    MouseScrollDown();
+                    break;
                 case ClickMode.Double:
                     Win32Services.MouseClick(Win32Services.MouseEventFlags.LEFTDOWN | Win32Services.MouseEventFlags.LEFTUP);
                     Win32Services.MouseClick(Win32Services.MouseEventFlags.LEFTDOWN | Win32Services.MouseEventFlags.LEFTUP);
@@ -275,8 +292,19 @@ namespace LeapIN.Interface
                     break;
                 case ClickMode.Right:
                     Win32Services.MouseClick(Win32Services.MouseEventFlags.RIGHTDOWN | Win32Services.MouseEventFlags.RIGHTUP);
+                    SetClickMode();
                     break;
             }
+        }
+
+        void MouseScrollUp()
+        {
+            Win32Services.MouseClick(Win32Services.MouseEventFlags.WHEEL, 240);
+        }
+
+        void MouseScrollDown()
+        {
+            Win32Services.MouseClick(Win32Services.MouseEventFlags.WHEEL, -240);
         }
     }
 }

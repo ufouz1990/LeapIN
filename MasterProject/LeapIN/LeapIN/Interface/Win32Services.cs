@@ -86,7 +86,8 @@ namespace LeapIN.Interface
             MOVE = 0x00000001,
             ABSOLUTE = 0x00008000,
             RIGHTDOWN = 0x00000008,
-            RIGHTUP = 0x00000010
+            RIGHTUP = 0x00000010,
+            WHEEL = 0x00000800
         }
 
         /* DLL IMPORTS */
@@ -105,7 +106,7 @@ namespace LeapIN.Interface
         static extern bool GetCursorPos(out POINT lpMousePoint);
 
         [DllImport("user32.dll")]
-        static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint cButtons, uint dwExtraInfo);
+        static extern void mouse_event(uint dwFlags, uint dx, uint dy, int cButtons, uint dwExtraInfo);
 
         /* DLL Method Calls */
 
@@ -171,8 +172,13 @@ namespace LeapIN.Interface
 
         public static void MouseClick(MouseEventFlags val)
         {
+            MouseClick(val, 0);
+        }
+
+        public static void MouseClick(MouseEventFlags val, int dwData)
+        {
             POINT pos = GetCursorPosition();
-            mouse_event((uint)val, (uint)pos.x, (uint)pos.y, 0, 0);
+            mouse_event((uint)val, (uint)pos.x, (uint)pos.y, dwData, 0);
         }
     }
 }
