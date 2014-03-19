@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Input;
 
 using Leap;
 using LeapIN.Extras;
@@ -18,10 +20,59 @@ namespace LeapIN.Interface
         Controller leap;
         double screenWidth;
         double screenHeight;
-        bool touching = false;
 
+        // For the tracking data - REMOVE AT RELEASE
         int curX = 0;
         int curY = 0;
+
+        PointerModule mouse;
+        KeyboardModule keyboard;
+
+        //List<KeyboardModule> keySets; // for the main keys a - z (store an upper case variant as well)
+        //char selectedKey;
+
+        public MainInterface()
+        {
+            // Set up the controller
+            leap = new Controller();
+            listener = new LeapControl();
+            listener.FrameReady += UpdateFrame;
+
+            //keySets.Add(new KeyboardModule(new char[] {'a', 'b', 'c'})); // EXAMPLE, use to perform a loop for all characters
+            keyboard = new KeyboardModule();
+
+            // Runs the leap constantly so it can be used when the window loses focus
+            if (leap.PolicyFlags != Controller.PolicyFlag.POLICYBACKGROUNDFRAMES)
+            {
+                leap.SetPolicyFlags(Controller.PolicyFlag.POLICYBACKGROUNDFRAMES);
+            }
+
+            // Get the screen size
+            screenWidth = SystemParameters.PrimaryScreenWidth;
+            screenHeight = SystemParameters.PrimaryScreenHeight;
+        }
+
+        public PointerModule Mouse
+        {
+            get
+            {
+                if (mouse == null)
+                    mouse = new PointerModule();
+
+                return mouse;
+            }
+        }
+
+        public KeyboardModule Keyboard
+        {
+            get
+            {
+                if (keyboard == null)
+                    keyboard = new KeyboardModule();
+
+                return keyboard;
+            }
+        }
 
         public int xPos
         {
@@ -35,33 +86,21 @@ namespace LeapIN.Interface
             set { curY = value; OnPropertyChanged("yPos"); }
         }
 
-        public MainInterface()
-        {
-            // Set up the controller
-            leap = new Controller();
-            listener = new LeapControl();
-            listener.FrameReady += UpdateFrame;
-
-            // Runs the leap constantly so it can be used when the window loses focus
-            if (leap.PolicyFlags != Controller.PolicyFlag.POLICYBACKGROUNDFRAMES) {
-                leap.SetPolicyFlags(Controller.PolicyFlag.POLICYBACKGROUNDFRAMES);
-            }
-
-            // Get the screen size
-            screenWidth = SystemParameters.PrimaryScreenWidth;
-            screenHeight = SystemParameters.PrimaryScreenHeight;
-        }
-
+        // Enables the listener whenever the interface is active/shown
         public void EnableListener(object sender, RoutedEventArgs e)
         {
             leap.AddListener(listener);
         }
 
+        // Disables the listener when the interface is hidden or closed
         public void DisableListener(object sender, RoutedEventArgs e)
         {
             leap.RemoveListener(listener);
         }
 
+        /// <summary>
+        /// Triggered when the Leap Motion OnFrame event occurs, handles the cursor control and events.
+        /// </summary>
         protected void UpdateFrame(Controller con)
         {
             // Grab the frame and the nearest pointer
@@ -75,29 +114,14 @@ namespace LeapIN.Interface
             double tx = normalizedPosition.x * screenWidth;
             double ty = screenHeight - normalizedPosition.y * screenHeight;
 
-            /* The following section is definitely subject to change
-             * Other methods may get called to handle switching click modes and all kinds of stuff
-             */
 
             // Allows use of mouse normally
             if (pointable.TouchZone != Pointable.Zone.ZONENONE)
             {
-                Win32Services.MoveCursor((int)tx, (int)ty);
-
-                if (pointable.TouchDistance <= 0 && !touching) // Inside the 'touch zone'
-                {
-                    // perform a single mouse click - this will change once on screen buttons are developed for making double clicks and right clicks
-                    Win32Services.MouseClick(Win32Services.MouseEventFlags.LEFTDOWN | Win32Services.MouseEventFlags.LEFTUP);
-                    touching = true;
-                }
-                else if (pointable.TouchDistance > 0)
-                {
-                    // Adding this and removing the LEFTUP from earlier allows for selection etc
-                    //Win32Services.MouseClick(Win32Services.MouseEventFlags.LEFTUP);
-                    touching = false;
-                }
+                Mouse.HandleFrame(tx, ty);
             }
 
+            // record current position
             Win32Services.POINT pt = Win32Services.GetCursorPosition();
             xPos = pt.x;
             yPos = pt.y;

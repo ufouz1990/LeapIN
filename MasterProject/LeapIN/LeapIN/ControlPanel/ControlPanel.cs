@@ -28,7 +28,7 @@ namespace LeapIN.ControlPanel
         }
 
         /// <summary>
-        /// The interface is created here, 
+        /// The interface is created here, hidden and disabled when not needed and quickly resumes when it is.
         /// </summary>
         void ChangeInterface()
         {

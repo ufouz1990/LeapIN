@@ -5,7 +5,7 @@
         <ResourceDictionary>
 
             <!-- workaround for a bug -->
-            <Style TargetType="{x:Type Rectangle}" />
+            <Style TargetType="{x:Type Shape}" />
 
             <ResourceDictionary.MergedDictionaries>
 
