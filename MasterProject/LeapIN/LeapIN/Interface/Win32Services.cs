@@ -8,6 +8,8 @@ namespace LeapIN.Interface
 {
     public static class Win32Services
     {
+        static IntPtr lastHandle = IntPtr.Zero;
+
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT
         {
@@ -75,6 +77,17 @@ namespace LeapIN.Interface
             }
         }
 
+        //enum GetWindow_Cmd : uint
+        //{
+        //    GW_HWNDFIRST = 0,
+        //    GW_HWNDLAST = 1,
+        //    GW_HWNDNEXT = 2,
+        //    GW_HWNDPREV = 3,
+        //    GW_OWNER = 4,
+        //    GW_CHILD = 5,
+        //    GW_ENABLEDPOPUP = 6
+        //}
+
         // Flags for outgoing mouse events
         [Flags]
         public enum MouseEventFlags
@@ -97,6 +110,18 @@ namespace LeapIN.Interface
 
         [DllImport("User32")]
         internal static extern IntPtr MonitorFromWindow(IntPtr handle, int flags);
+
+        //[DllImport("user32.dll")]
+        //static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd);
+
+        //[DllImport("user32.dll")]
+        //static extern IntPtr GetParent(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        static extern IntPtr GetForegroundWindow();
+
+        [DllImport("user32.dll")]
+        static extern IntPtr SetForegroundWindow(IntPtr handle);
 
         // Required functions for controlling the cursor
         [DllImport("user32.dll")]
@@ -150,6 +175,52 @@ namespace LeapIN.Interface
 
             Marshal.StructureToPtr(mmi, lParam, true);
         }
+
+        public static void GetActiveWindow()
+        {
+            lastHandle = GetForegroundWindow();
+        }
+
+        public static void SetLastActive()
+        {
+            IntPtr curHandle = GetForegroundWindow();
+
+            if (curHandle != lastHandle)
+            {
+                SetForegroundWindow(lastHandle);
+            }
+        }
+
+        //public static void SetLastActive()
+        //{
+        //    IntPtr curHandle = GetForegroundWindow();
+        //    IntPtr targetHwnd = GetWindow(curHandle, (uint)GetWindow_Cmd.GW_HWNDNEXT);
+        //    while (true)
+        //    {
+        //        IntPtr temp = GetParent(targetHwnd);
+        //        if (temp.Equals(IntPtr.Zero)) break;
+        //        targetHwnd = temp;
+        //    }
+        //    SetForegroundWindow(targetHwnd);
+        //}
+
+        //public static void SetLastActive()
+        //{
+        //    IntPtr curHandle = GetForegroundWindow();
+
+        //    if (curHandle != lastHandle)
+        //    {
+        //        IntPtr lastWindow = GetLastActivePopup(curHandle);
+        //        lastHandle = IsWindowVisible(lastWindow) ? lastWindow : IntPtr.Zero;
+
+        //        //Switch to the last window
+        //        SetForegroundWindow(lastHandle);
+        //    }
+        //    else
+        //    {
+        //        lastHandle = IntPtr.Zero;
+        //    }
+        //}
 
         public static POINT GetCursorPosition()
         {

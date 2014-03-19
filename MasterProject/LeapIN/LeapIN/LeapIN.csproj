@@ -80,6 +80,8 @@
       <DependentUpon>ControlWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Extras\SetPropertyAction.cs" />
+    <Compile Include="Interface\KeyboardModule.cs" />
+    <Compile Include="Interface\PointerModule.cs" />
     <Compile Include="Interface\Win32Services.cs" />
     <Page Include="ControlPanel\ControlWindow.xaml">
       <SubType>Designer</SubType>
@@ -107,6 +109,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\ControlStyles\ButtonStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\ControlStyles\HorizontalListBoxStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Resources\ControlStyles\MenuItemStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
