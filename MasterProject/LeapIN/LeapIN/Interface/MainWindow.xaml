@@ -9,13 +9,13 @@
     </Window.Style>
     
     <Grid>
-        <Border Background="Black" Height="60" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top" >
+        <!--<Border Background="Black" Height="60" Width="100" HorizontalAlignment="Left" VerticalAlignment="Top" >
             <StackPanel Margin="5">
                 <TextBlock Text="Tracking Data" Foreground="White" />
                 <TextBlock Text="{Binding Path=xPos, StringFormat='X Position: {0}'}" Foreground="White" />
                 <TextBlock Text="{Binding Path=yPos, StringFormat='Y Position: {0}'}" Foreground="White" />
             </StackPanel>
-        </Border>
+        </Border>-->
         
         <ListBox ItemsSource="{Binding Mouse.MouseModes}" SelectedItem="{Binding Mouse.SelectedMode}" Height="40" VerticalAlignment="Bottom"
                  HorizontalAlignment="Center" Style="{StaticResource HorizontalListBoxStyle}" 
@@ -100,21 +100,44 @@
         
         <Border SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Bottom" 
                 Margin="15" Height="45" Width="60" Background="#FCCC" CornerRadius="0,0,20,20" BorderBrush="Black" BorderThickness="0,1,0,0"/>
-        
+
+        <Border Background="White" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="80" Width="300" Margin="100, 15">
+            <TextBlock Text="{Binding Keyboard.CurrentWord}" FontSize="36"  VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Border>
+
         <ItemsControl ItemsSource="{Binding Keyboard.SKeys}" Width="100" HorizontalAlignment="Right" VerticalAlignment="Center">
+            
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Grid Height="75" Background="White">
+                    <Grid Height="75" SnapsToDevicePixels="True">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" Content="{Binding Selected.Name}" />
-                        <Button Grid.Column="1" Content=">" />
+                        <Button Grid.Column="0" Content="{Binding Selected.Name}" Command="{Binding DataContext.Keyboard.InputCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" CommandParameter="{Binding Selected}" Style="{StaticResource KeyButtonStyle}" />
+                        <Button Grid.Column="1" Content=">" Command="{Binding DataContext.Keyboard.NextKeyCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" CommandParameter="{Binding }" Style="{StaticResource KeyButtonStyle}" />
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseEnter">
+                                <ex:SetPropertyAction PropertyName="MouseOverControl"
+                                                      TargetObject="{Binding DataContext.Mouse, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}"
+                                                      PropertyValue="True" />
+                            </i:EventTrigger>
+                            <i:EventTrigger EventName="MouseLeave">
+                                <ex:SetPropertyAction PropertyName="MouseOverControl"
+                                                      TargetObject="{Binding DataContext.Mouse, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}"
+                                                      PropertyValue="False"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        
+        <Button Content="Special" Command="{Binding Keyboard.SwitchModeCommand}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,55" Width="100" Height="60" Style="{StaticResource KeyButtonStyle}"/>
+        <Button Content="Enter" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,5" Width="150" Height="60" Style="{StaticResource KeyButtonStyle}"/>
+        <Button Content="Backspace" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0, 70" Width="150" Height="60" Style="{StaticResource KeyButtonStyle}"/>
+        <Button Content="Space" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="155, 5" Width="250" Height="60" Style="{StaticResource KeyButtonStyle}"/>
+        <!--<Button Content="Shift" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="410, 5" Width="150" Height="60" Style="{StaticResource KeyButtonStyle}"/>-->
 
         <!--<Button Content="{Binding Mode}" Command="{Binding ChangeClick}" Height="50" Width="200" HorizontalAlignment="Center" VerticalAlignment="Bottom">
             <i:Interaction.Triggers>

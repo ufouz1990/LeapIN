@@ -22,8 +22,8 @@ namespace LeapIN.Interface
         double screenHeight;
 
         // For the tracking data - REMOVE AT RELEASE
-        int curX = 0;
-        int curY = 0;
+        //int curX = 0;
+        //int curY = 0;
 
         PointerModule mouse;
         KeyboardModule keyboard;
@@ -74,17 +74,17 @@ namespace LeapIN.Interface
             }
         }
 
-        public int xPos
-        {
-            get { return curX; }
-            set { curX = value; OnPropertyChanged("xPos"); }
-        }
+        //public int xPos
+        //{
+        //    get { return curX; }
+        //    set { curX = value; OnPropertyChanged("xPos"); }
+        //}
 
-        public int yPos
-        {
-            get { return curY; }
-            set { curY = value; OnPropertyChanged("yPos"); }
-        }
+        //public int yPos
+        //{
+        //    get { return curY; }
+        //    set { curY = value; OnPropertyChanged("yPos"); }
+        //}
 
         // Enables the listener whenever the interface is active/shown
         public void EnableListener(object sender, RoutedEventArgs e)
@@ -122,9 +122,9 @@ namespace LeapIN.Interface
             }
 
             // record current position
-            Win32Services.POINT pt = Win32Services.GetCursorPosition();
-            xPos = pt.x;
-            yPos = pt.y;
+            //Win32Services.POINT pt = Win32Services.GetCursorPosition();
+            //xPos = pt.x;
+            //yPos = pt.y;
         }
     }
 }

@@ -15,6 +15,7 @@ namespace LeapIN.Interface
         bool dragging = false; // Special case - if drag mode is active then the left button has to be released on a second mouse click
         bool scrolling = false;
         bool mouseOverControl = false; // When the mouse is over the UI only single clicks are possible regardless of mode
+        bool viewSwitched = false;
 
         // Leap point tracking, hover duration and threshold values for hover touching
         Point anchor = new Point(); // Current hover point
@@ -219,6 +220,7 @@ namespace LeapIN.Interface
             if (SelectedMode == MouseModes[4] && !MouseOverControl || SelectedMode == MouseModes[5] && !MouseOverControl)
             {
                 Win32Services.SetLastActive();
+                viewSwitched = false;
             }
 
             Win32Services.MouseClick(SelectedMode.flags, SelectedMode.dwData);
@@ -247,9 +249,16 @@ namespace LeapIN.Interface
         /// </summary>
         void SpecialEvent(PointerMode mode)
         {
-            if (!SelectedMode.IsMouseOver)
+            int i = 0;
+            for (i = 0; MouseModes[i] != SelectedMode; i++);
+
+            if (!MouseModes[i].IsMouseOver)
             {
-                Win32Services.GetActiveWindow();
+                if (!viewSwitched)
+                {
+                    Win32Services.GetActiveWindow();
+                    viewSwitched = true;
+                }
 
                 Win32Services.MouseClick(mode.flags);
             }
