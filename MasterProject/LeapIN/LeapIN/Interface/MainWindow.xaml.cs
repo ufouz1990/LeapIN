@@ -20,8 +20,8 @@ namespace LeapIN.Interface
             this.DataContext = context;
 
             this.SourceInitialized += Window_SourceInitialized;
-            this.Loaded += context.EnableListener;
-            this.Unloaded += context.DisableListener;
+            this.Loaded += context.EnableController;
+            this.Unloaded += context.DisableController;
             this.Closing += Window_Closing;
         }
 

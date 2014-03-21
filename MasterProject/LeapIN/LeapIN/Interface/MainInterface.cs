@@ -33,19 +33,12 @@ namespace LeapIN.Interface
 
         public MainInterface()
         {
-            // Set up the controller
-            leap = new Controller();
+            // Set up the listener
             listener = new LeapControl();
             listener.FrameReady += UpdateFrame;
 
             //keySets.Add(new KeyboardModule(new char[] {'a', 'b', 'c'})); // EXAMPLE, use to perform a loop for all characters
             keyboard = new KeyboardModule();
-
-            // Runs the leap constantly so it can be used when the window loses focus
-            if (leap.PolicyFlags != Controller.PolicyFlag.POLICYBACKGROUNDFRAMES)
-            {
-                leap.SetPolicyFlags(Controller.PolicyFlag.POLICYBACKGROUNDFRAMES);
-            }
 
             // Get the screen size
             screenWidth = SystemParameters.PrimaryScreenWidth;
@@ -86,16 +79,25 @@ namespace LeapIN.Interface
         //    set { curY = value; OnPropertyChanged("yPos"); }
         //}
 
-        // Enables the listener whenever the interface is active/shown
-        public void EnableListener(object sender, RoutedEventArgs e)
+        // Enables the controller whenever the interface is active/shown
+        public void EnableController(object sender, RoutedEventArgs e)
         {
+            leap = new Controller();
+
+            // Runs the leap constantly so it can be used when the window loses focus
+            if (leap.PolicyFlags != Controller.PolicyFlag.POLICYBACKGROUNDFRAMES)
+            {
+                leap.SetPolicyFlags(Controller.PolicyFlag.POLICYBACKGROUNDFRAMES);
+            }
+
             leap.AddListener(listener);
         }
 
-        // Disables the listener when the interface is hidden or closed
-        public void DisableListener(object sender, RoutedEventArgs e)
+        // Disables the controller when the interface is hidden or closed
+        public void DisableController(object sender, RoutedEventArgs e)
         {
             leap.RemoveListener(listener);
+            leap.Dispose();
         }
 
         /// <summary>
