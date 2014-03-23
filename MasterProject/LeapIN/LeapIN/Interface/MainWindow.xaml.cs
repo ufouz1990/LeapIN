@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -10,18 +11,18 @@ namespace LeapIN.Interface
     /// </summary>
     public partial class MainWindow : Window
     {
+        MainInterface context;
+
         public MainWindow()
         {
-            //Win32Services.Begin(this);
             InitializeComponent();
 
             // Set this windows datacontext
-            MainInterface context = new MainInterface();
+            context = new MainInterface();
             this.DataContext = context;
 
             this.SourceInitialized += Window_SourceInitialized;
-            this.Loaded += context.EnableController;
-            this.Unloaded += context.DisableController;
+            this.IsVisibleChanged += context.HandleController;
             this.Closing += Window_Closing;
         }
 
@@ -29,14 +30,20 @@ namespace LeapIN.Interface
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             this.Closing -= Window_Closing;
+
+            if (this.Visibility == Visibility.Visible)
+            {
+                context.DestroyDevice();
+            }
+
             this.DataContext = null;
             GC.Collect();
         }
 
         void Window_SourceInitialized(object sender, EventArgs e)
         {
-            IntPtr handle = (new WindowInteropHelper(this)).Handle;
-            Win32Services.SetupWindow(handle);
+            WindowInteropHelper helper = new WindowInteropHelper(this);
+            Win32Services.SetupWindow(helper);
         }
     }
 }

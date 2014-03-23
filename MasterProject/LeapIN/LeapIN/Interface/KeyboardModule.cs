@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 
 using LeapIN.Extras;
+using System.Runtime.InteropServices;
 
 namespace LeapIN.Interface
 {
@@ -16,6 +17,7 @@ namespace LeapIN.Interface
         List<KeySet> speckeys; // Number Keys
 
         string currentWord;
+        List<Key> inputKeys;
 
         ICommand inputCommand; // On a char
         ICommand postCommand; // Space or enter
@@ -28,12 +30,12 @@ namespace LeapIN.Interface
         public struct Key
         {
             public string k;
-            public int code;
+            public ushort code;
 
             public Key(char kn, int c)
             {
                 k = kn.ToString();
-                code = c;
+                code = (ushort)c;
             }
 
             public string Name
@@ -59,13 +61,18 @@ namespace LeapIN.Interface
             {
                 keygroup = t.keygroup;
                 size = t.size;
-                selected = t.keygroup[0];
+                //selected = t.keygroup[0];
             }
 
             public Key Selected
             {
                 get { return selected; }
                 set { selected = value; OnPropertyChanged("Selected"); }
+            }
+
+            public List<Key> KeyGroup
+            {
+                get { return keygroup; }
             }
         }
 
@@ -74,6 +81,7 @@ namespace LeapIN.Interface
             keys = new List<KeySet>();
             capskeys = new List<KeySet>();
             speckeys = new List<KeySet>();
+            inputKeys = new List<Key>();
 
             InitialiseKeyboard();
 
@@ -120,6 +128,34 @@ namespace LeapIN.Interface
             }
         }
 
+        public ICommand PostCommand
+        {
+            get
+            {
+                if (postCommand == null)
+                {
+                    postCommand = new RelayCommand(
+                        param => SendWord(param)
+                    );
+                }
+                return postCommand;
+            }
+        }
+
+        public ICommand DeleteCommand
+        {
+            get
+            {
+                if (deleteCommand == null)
+                {
+                    deleteCommand = new RelayCommand(
+                        param => BackSpace()
+                    );
+                }
+                return deleteCommand;
+            }
+        }
+
         public ICommand NextKeyCommand
         {
             get
@@ -162,7 +198,6 @@ namespace LeapIN.Interface
             CreateAlphabet(97, ref keys);
             CreateAlphabet(65, ref capskeys);
             CreateSpecial();
-
         }
 
         /// <summary>
@@ -189,7 +224,8 @@ namespace LeapIN.Interface
                 list.Add(new KeySet(temp));
             }
 
-            CreateKeyGroup(new char[] { '.', ',', '\'', '!', '?' }, new int[] { 190, 188, 222, 49, 191 }, 5, ref list);
+            CreateKeyGroup(new char[] { '.', ',', '\'' }, new int[] { 190, 188, 222 }, 3, ref list);
+            CreateKeyGroup(new char[] { '!', '?' }, new int[] { 49, 191, 7 }, 2, ref list);
         }
 
         // Adds all non alphabet characters to a separate set of key groups
@@ -256,10 +292,64 @@ namespace LeapIN.Interface
         {
             Key pressed = (Key)o;
             CurrentWord += pressed.k;
+            inputKeys.Add(pressed);
         }
 
-        // Command binding leading to a function that adds to a property/variable displaying the current word, detect space, apply the current word to actual keypresses using win32
-        // detect things like backspace too
-        // 1 button switches through the letters, which updates the second button which adds the letters??
+        void SendWord(object n)
+        {
+            string type = (string)n;
+
+            foreach (Key k in inputKeys)
+            {
+                SendKey(k.code);
+            }
+
+            switch (type)
+            {
+                case "Space":
+                    SendKey((ushort)0x20);
+                    break;
+                case "Enter":
+                    SendKey((ushort)0x0D);
+                    break;
+                default:
+                    break;
+            }
+
+            inputKeys.Clear();
+            CurrentWord = "";
+        }
+
+        void SendKey(ushort code)
+        {
+            Win32Services.INPUT structInput;
+
+            structInput = new Win32Services.INPUT();
+            structInput.type = (uint)1;
+            structInput.ki.wScan = 0;
+            structInput.ki.time = 0;
+            structInput.ki.dwFlags = 0;
+            structInput.ki.dwExtraInfo = 0;
+
+            // set to the virtual key code
+            structInput.ki.wVk = code;
+            Win32Services.SendInput(1, ref structInput, Marshal.SizeOf(structInput));
+
+            structInput.ki.dwFlags = Win32Services.KEYEVENTF_KEYUP;
+            Win32Services.SendInput(1, ref structInput, Marshal.SizeOf(structInput));
+        }
+
+        void BackSpace()
+        {
+            if (CurrentWord != "" && CurrentWord != null)
+            {
+                inputKeys.RemoveAt(inputKeys.Count - 1);
+                CurrentWord = CurrentWord.Remove(CurrentWord.Length - 1);
+            }
+            else
+            {
+                SendKey((ushort)0x08);
+            }
+        }
     }
 }

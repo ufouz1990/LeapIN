@@ -9,10 +9,49 @@ using LeapIN.Interface;
 
 namespace LeapIN.ControlPanel
 {
-    class ControlPanel
+    class ControlPanel : PropertyChange
     {
         MainWindow app;
         ICommand _changeState;
+
+        double s, es, sp;
+
+        public ControlPanel()
+        {
+            Sensitivity = 2.0d;
+            ExitSensitivity = 6.0d;
+            Speed = 4.0d;
+        }
+
+        public double Sensitivity
+        {
+            get { return s; }
+            set
+            {
+                s = value;
+                OnPropertyChanged("Sensitivity");
+            }
+        }
+
+        public double ExitSensitivity
+        {
+            get { return es; }
+            set
+            {
+                es = value;
+                OnPropertyChanged("ExitSensitivity");
+            }
+        }
+
+        public double Speed
+        {
+            get { return sp; }
+            set
+            {
+                sp = value;
+                OnPropertyChanged("Speed");
+            }
+        }
 
         public ICommand ChangeState
         {
@@ -42,6 +81,11 @@ namespace LeapIN.ControlPanel
             // Show or hide the window
             if (!app.IsVisible)
             {
+                // get the window datacontext
+                MainInterface con = app.DataContext as MainInterface;
+
+                con.Mouse.AlterSettings(s, es, sp); // Mouse update
+
                 app.Show();
             }
             else if (app.IsVisible)
@@ -62,7 +106,6 @@ namespace LeapIN.ControlPanel
                 if (result == MessageBoxResult.Yes)
                 {
                     app.Close();
-                    app = null;
                 }
                 else if (result == MessageBoxResult.No)
                 {

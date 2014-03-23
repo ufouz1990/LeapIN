@@ -8,7 +8,8 @@ namespace LeapIN.Interface
 {
     public static class Win32Services
     {
-        static IntPtr lastHandle = IntPtr.Zero;
+        private const int GWL_EXSTYLE = -20;
+        private const int WS_EX_NOACTIVATE = 0x08000000;
 
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT
@@ -77,17 +78,6 @@ namespace LeapIN.Interface
             }
         }
 
-        //enum GetWindow_Cmd : uint
-        //{
-        //    GW_HWNDFIRST = 0,
-        //    GW_HWNDLAST = 1,
-        //    GW_HWNDNEXT = 2,
-        //    GW_HWNDPREV = 3,
-        //    GW_OWNER = 4,
-        //    GW_CHILD = 5,
-        //    GW_ENABLEDPOPUP = 6
-        //}
-
         // Flags for outgoing mouse events
         [Flags]
         public enum MouseEventFlags
@@ -103,25 +93,51 @@ namespace LeapIN.Interface
             WHEEL = 0x00000800
         }
 
+        public const uint KEYEVENTF_KEYUP = 0x0002;
+
+        // Structures for key board input
+        public struct KEYBDINPUT
+        {
+            public ushort wVk;
+            public ushort wScan;
+            public uint dwFlags;
+            public long time;
+            public uint dwExtraInfo;
+        };
+
+        [StructLayout(LayoutKind.Explicit, Size = 28)]
+        public struct INPUT
+        {
+            [FieldOffset(0)]
+            public uint type;
+            [FieldOffset(4)]
+            public KEYBDINPUT ki;
+        };
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct InputKeys
+        {
+            public uint type;
+            public uint wVk;
+            public uint wScan;
+            public uint dwFlags;
+            public uint time;
+            public uint dwExtra;
+        }
+
         /* DLL IMPORTS */
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
+
+        [DllImport("user32.dll")]
+        public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
         [DllImport("user32")]
         internal static extern bool GetMonitorInfo(IntPtr hMonitor, MONITORINFO lpmi);
 
         [DllImport("User32")]
         internal static extern IntPtr MonitorFromWindow(IntPtr handle, int flags);
-
-        //[DllImport("user32.dll")]
-        //static extern IntPtr GetWindow(IntPtr hWnd, uint uCmd);
-
-        //[DllImport("user32.dll")]
-        //static extern IntPtr GetParent(IntPtr hWnd);
-
-        [DllImport("user32.dll")]
-        static extern IntPtr GetForegroundWindow();
-
-        [DllImport("user32.dll")]
-        static extern IntPtr SetForegroundWindow(IntPtr handle);
 
         // Required functions for controlling the cursor
         [DllImport("user32.dll")]
@@ -133,11 +149,20 @@ namespace LeapIN.Interface
         [DllImport("user32.dll")]
         static extern void mouse_event(uint dwFlags, uint dx, uint dy, int cButtons, uint dwExtraInfo);
 
+        [DllImport("user32.dll")]
+        public static extern uint SendInput(uint nInputs, ref INPUT pInputs, int cbSize);
+
+        [DllImport("User32.DLL", EntryPoint = "SendInput")]
+        public static extern uint SendInput(uint nInputs, InputKeys[] inputs, int cbSize);
+
+
         /* DLL Method Calls */
 
-        public static void SetupWindow(IntPtr handle)
+        public static void SetupWindow(WindowInteropHelper helper)
         {
-            HwndSource.FromHwnd(handle).AddHook(new HwndSourceHook(WindowProc));
+            HwndSource.FromHwnd(helper.Handle).AddHook(new HwndSourceHook(WindowProc));
+            SetWindowLong(helper.Handle, GWL_EXSTYLE,
+                GetWindowLong(helper.Handle, GWL_EXSTYLE) | WS_EX_NOACTIVATE);
         }
 
         private static IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
@@ -175,52 +200,6 @@ namespace LeapIN.Interface
 
             Marshal.StructureToPtr(mmi, lParam, true);
         }
-
-        public static void GetActiveWindow()
-        {
-            lastHandle = GetForegroundWindow();
-        }
-
-        public static void SetLastActive()
-        {
-            IntPtr curHandle = GetForegroundWindow();
-
-            if (curHandle != lastHandle)
-            {
-                SetForegroundWindow(lastHandle);
-            }
-        }
-
-        //public static void SetLastActive()
-        //{
-        //    IntPtr curHandle = GetForegroundWindow();
-        //    IntPtr targetHwnd = GetWindow(curHandle, (uint)GetWindow_Cmd.GW_HWNDNEXT);
-        //    while (true)
-        //    {
-        //        IntPtr temp = GetParent(targetHwnd);
-        //        if (temp.Equals(IntPtr.Zero)) break;
-        //        targetHwnd = temp;
-        //    }
-        //    SetForegroundWindow(targetHwnd);
-        //}
-
-        //public static void SetLastActive()
-        //{
-        //    IntPtr curHandle = GetForegroundWindow();
-
-        //    if (curHandle != lastHandle)
-        //    {
-        //        IntPtr lastWindow = GetLastActivePopup(curHandle);
-        //        lastHandle = IsWindowVisible(lastWindow) ? lastWindow : IntPtr.Zero;
-
-        //        //Switch to the last window
-        //        SetForegroundWindow(lastHandle);
-        //    }
-        //    else
-        //    {
-        //        lastHandle = IntPtr.Zero;
-        //    }
-        //}
 
         public static POINT GetCursorPosition()
         {

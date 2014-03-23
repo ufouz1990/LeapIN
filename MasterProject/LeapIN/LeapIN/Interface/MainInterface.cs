@@ -21,15 +21,8 @@ namespace LeapIN.Interface
         double screenWidth;
         double screenHeight;
 
-        // For the tracking data - REMOVE AT RELEASE
-        //int curX = 0;
-        //int curY = 0;
-
         PointerModule mouse;
         KeyboardModule keyboard;
-
-        //List<KeyboardModule> keySets; // for the main keys a - z (store an upper case variant as well)
-        //char selectedKey;
 
         public MainInterface()
         {
@@ -37,7 +30,8 @@ namespace LeapIN.Interface
             listener = new LeapControl();
             listener.FrameReady += UpdateFrame;
 
-            //keySets.Add(new KeyboardModule(new char[] {'a', 'b', 'c'})); // EXAMPLE, use to perform a loop for all characters
+            // Set up both modules with the various settings
+            mouse = new PointerModule();
             keyboard = new KeyboardModule();
 
             // Get the screen size
@@ -47,55 +41,42 @@ namespace LeapIN.Interface
 
         public PointerModule Mouse
         {
-            get
-            {
-                if (mouse == null)
-                    mouse = new PointerModule();
-
-                return mouse;
-            }
+            get { return mouse; }
         }
 
         public KeyboardModule Keyboard
         {
-            get
-            {
-                if (keyboard == null)
-                    keyboard = new KeyboardModule();
+            get { return keyboard; }
+        }
 
-                return keyboard;
+        // Enables/Disables the controller based on the visibility of the overlay
+        public void HandleController(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            Window overlay = sender as Window;
+
+            if (overlay.Visibility == Visibility.Hidden)
+            {
+                leap.RemoveListener(listener);
+                leap.Dispose();
+            } 
+            else if (overlay.Visibility == Visibility.Visible)
+            {
+                leap = new Controller();
+
+                // Runs the leap constantly so it can be used when the window loses focus
+                if (leap.PolicyFlags != Controller.PolicyFlag.POLICYBACKGROUNDFRAMES)
+                {
+                    leap.SetPolicyFlags(Controller.PolicyFlag.POLICYBACKGROUNDFRAMES);
+                }
+
+                leap.AddListener(listener);
             }
         }
 
-        //public int xPos
-        //{
-        //    get { return curX; }
-        //    set { curX = value; OnPropertyChanged("xPos"); }
-        //}
-
-        //public int yPos
-        //{
-        //    get { return curY; }
-        //    set { curY = value; OnPropertyChanged("yPos"); }
-        //}
-
-        // Enables the controller whenever the interface is active/shown
-        public void EnableController(object sender, RoutedEventArgs e)
+        // When the window does get closed, make sure the leap service is disposed of
+        public void DestroyDevice()
         {
-            leap = new Controller();
 
-            // Runs the leap constantly so it can be used when the window loses focus
-            if (leap.PolicyFlags != Controller.PolicyFlag.POLICYBACKGROUNDFRAMES)
-            {
-                leap.SetPolicyFlags(Controller.PolicyFlag.POLICYBACKGROUNDFRAMES);
-            }
-
-            leap.AddListener(listener);
-        }
-
-        // Disables the controller when the interface is hidden or closed
-        public void DisableController(object sender, RoutedEventArgs e)
-        {
             leap.RemoveListener(listener);
             leap.Dispose();
         }

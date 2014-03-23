@@ -14,6 +14,7 @@
         <ResourceDictionary Source="ControlStyles/ButtonStyle.xaml"/>
         <ResourceDictionary Source="ControlStyles/KeyButtonStyle.xaml"/>
         <ResourceDictionary Source="ControlStyles/HorizontalListBoxStyle.xaml"/>
+        <ResourceDictionary Source="ControlStyles/HorizontalListStyle.xaml"/>
         <ResourceDictionary Source="ControlStyles/MenuItemStyle.xaml"/>
         <ResourceDictionary Source="ControlStyles/TabItemStyle.xaml"/>
 

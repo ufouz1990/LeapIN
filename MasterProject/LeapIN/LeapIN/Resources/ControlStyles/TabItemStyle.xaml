@@ -4,10 +4,10 @@
     <Style x:Key="TabItemStyle" TargetType="{x:Type TabItem}">
         <Setter Property="Margin" Value="0"/>
         <Setter Property="Padding" Value="0"/>
-        <Setter Property="FontSize" Value="12px"/>
-        <Setter Property="Width" Value="120px"/>
+        <Setter Property="FontSize" Value="14px"/>
+        <Setter Property="Width" Value="160px"/>
         <Setter Property="Height" Value="40px"/>
-        <Setter Property="Foreground" Value="#fff"/>
+        <Setter Property="Foreground" Value="#F111"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
@@ -18,10 +18,10 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Border" Property="Background" Value="#444"/>
+                            <Setter TargetName="Border" Property="Background" Value="#FCCC"/> <!-- 444 -->
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="Border" Property="Background" Value="#666"/>
+                            <Setter TargetName="Border" Property="Background" Value="#F888"/> <!-- 666 -->
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

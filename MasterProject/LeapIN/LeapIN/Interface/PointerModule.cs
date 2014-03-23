@@ -15,7 +15,6 @@ namespace LeapIN.Interface
         bool dragging = false; // Special case - if drag mode is active then the left button has to be released on a second mouse click
         bool scrolling = false;
         bool mouseOverControl = false; // When the mouse is over the UI only single clicks are possible regardless of mode
-        bool viewSwitched = false;
 
         // Leap point tracking, hover duration and threshold values for hover touching
         Point anchor = new Point(); // Current hover point
@@ -23,6 +22,14 @@ namespace LeapIN.Interface
         double eventspeed = 4; // Higher values decrease hover time
         double threshold = 2.25d; // For sum of squares
         double exitThreshold = 6.0d; // For when a click has occurred exit thresh is higher to prevent extra clicks
+
+        // To change the thresh, exitthresh and speed values
+        public void AlterSettings(double s, double es, double sp)
+        {
+            threshold = s;
+            exitThreshold = es;
+            sp = eventspeed;
+        }
 
         // Nested class for a pointer mode
         public class PointerMode
@@ -217,12 +224,6 @@ namespace LeapIN.Interface
         /// </summary>
         void MouseEvent()
         {
-            if (SelectedMode == MouseModes[4] && !MouseOverControl || SelectedMode == MouseModes[5] && !MouseOverControl)
-            {
-                Win32Services.SetLastActive();
-                viewSwitched = false;
-            }
-
             Win32Services.MouseClick(SelectedMode.flags, SelectedMode.dwData);
 
             switch (SelectedMode.specialID)
@@ -249,19 +250,7 @@ namespace LeapIN.Interface
         /// </summary>
         void SpecialEvent(PointerMode mode)
         {
-            int i = 0;
-            for (i = 0; MouseModes[i] != SelectedMode; i++);
-
-            if (!MouseModes[i].IsMouseOver)
-            {
-                if (!viewSwitched)
-                {
-                    Win32Services.GetActiveWindow();
-                    viewSwitched = true;
-                }
-
-                Win32Services.MouseClick(mode.flags);
-            }
+            Win32Services.MouseClick(mode.flags);
         }
     }
 }
