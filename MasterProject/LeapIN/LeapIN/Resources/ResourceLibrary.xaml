@@ -7,16 +7,22 @@
         <!-- For example: <ResourceDictionary Source="ControlStyles/ButtonStyle.xaml"/>  -->
 
         <!-- Brushes -->
+        <ResourceDictionary Source="Brushes/DefaultTheme.xaml"/> <!-- Change this file name to apply a different theme! -->
         
+        <!-- Base Full Override Styles -->
+        <ResourceDictionary Source="BaseStyles/ButtonStyle.xaml"/>
+        <ResourceDictionary Source="BaseStyles/StackPanelStyle.xaml"/>
+        <ResourceDictionary Source="BaseStyles/TabControlStyle.xaml"/>
+        <ResourceDictionary Source="BaseStyles/TabItemStyle.xaml"/>
+
         <!-- Control Styles -->
         <ResourceDictionary Source="ControlStyles/BlankWindowStyle.xaml"/>
-
-        <ResourceDictionary Source="ControlStyles/ButtonStyle.xaml"/>
-        <ResourceDictionary Source="ControlStyles/KeyButtonStyle.xaml"/>
+        <ResourceDictionary Source="ControlStyles/HeaderStyle.xaml"/>
         <ResourceDictionary Source="ControlStyles/HorizontalListBoxStyle.xaml"/>
         <ResourceDictionary Source="ControlStyles/HorizontalListStyle.xaml"/>
+        <ResourceDictionary Source="ControlStyles/KeyButtonStyle.xaml"/>
+        <ResourceDictionary Source="ControlStyles/KeyboardStyle.xaml"/>
         <ResourceDictionary Source="ControlStyles/MenuItemStyle.xaml"/>
-        <ResourceDictionary Source="ControlStyles/TabItemStyle.xaml"/>
 
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

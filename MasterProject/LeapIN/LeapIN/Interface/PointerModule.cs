@@ -35,12 +35,11 @@ namespace LeapIN.Interface
         public class PointerMode
         {
             public string name;
-            public Win32Services.MouseEventFlags flags;
+            public MouseFlags flags;
             public int specialID;
             public int dwData;
-            public bool mouseover = false;
 
-            public PointerMode(string n, Win32Services.MouseEventFlags f, int s, int data)
+            public PointerMode(string n, MouseFlags f, int s, int data)
             {
                 name = n;
                 flags = f;
@@ -48,25 +47,11 @@ namespace LeapIN.Interface
                 dwData = data;
             }
 
-            public PointerMode(string n, Win32Services.MouseEventFlags f) : this(n, f, 0, 0) { }
+            public PointerMode(string n, MouseFlags f) : this(n, f, 0, 0) { }
 
             public string Name
             {
                 get { return name; }
-            }
-
-            // Property for the individual mouse modes, if it is over an already selected one,
-            // special single click events won't happen preventing a bug where the last active window changed
-            public bool IsMouseOver 
-            {
-                get { return mouseover; }
-                set
-                {
-                    if (mouseover != value)
-                    {
-                        mouseover = value;
-                    }
-                }
             }
         }
 
@@ -175,7 +160,7 @@ namespace LeapIN.Interface
                         // perform a single mouse click when over a control, otherwise use the mode
                         if (MouseOverControl)
                         {
-                            SpecialEvent(MouseModes[0]);
+                            SpecialEvent();
                         }
                         else
                         {
@@ -224,6 +209,7 @@ namespace LeapIN.Interface
         /// </summary>
         void MouseEvent()
         {
+            // Send an event
             Win32Services.MouseClick(SelectedMode.flags, SelectedMode.dwData);
 
             switch (SelectedMode.specialID)
@@ -248,9 +234,9 @@ namespace LeapIN.Interface
         /// Executed when the pointer is over certain UI elements,
         /// used to perform single clicks only.
         /// </summary>
-        void SpecialEvent(PointerMode mode)
+        void SpecialEvent()
         {
-            Win32Services.MouseClick(mode.flags);
+            Win32Services.MouseClick(MouseModes[0].flags);
         }
     }
 }

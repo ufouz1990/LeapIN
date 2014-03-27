@@ -10,46 +10,39 @@ namespace LeapIN.Interface
 {
     class KeyboardModule : PropertyChange
     {
-        byte[] keycodes;
-        List<KeySet> currentkeys;
+        List<KeySet> currentkeys; // The currently displayed set
         List<KeySet> keys; // Regular set of keygroups
-        List<KeySet> capskeys;
-        List<KeySet> speckeys; // Number Keys
-
-        string currentWord;
-        List<Key> inputKeys;
+        List<KeySet> capskeys; // Upper case
+        List<KeySet> speckeys; // Number Keys etc
 
         ICommand inputCommand; // On a char
-        ICommand postCommand; // Space or enter
-        ICommand deleteCommand; // Backspace
-        ICommand nextKeyCommand;
-        ICommand switchModeCommand;
+        ICommand postCommand; // Space/Enter/Backspace
+        ICommand shiftCommand;
 
         // struct to hold the definition of a key:
         // its string representation and the virtual keyboard code used to call the event
         public struct Key
         {
-            public string k;
+            public string name;
             public ushort code;
 
             public Key(char kn, int c)
             {
-                k = kn.ToString();
+                name = kn.ToString();
                 code = (ushort)c;
             }
 
             public string Name
             {
-                get { return k; }
+                get { return name; }
             }
         }
 
         // struct specifically for small sets of keys like A, B, C
-        public class KeySet : PropertyChange
+        public class KeySet
         {
             public List<Key> keygroup;
             public int size;
-            public Key selected;
 
             public KeySet()
             {
@@ -61,13 +54,6 @@ namespace LeapIN.Interface
             {
                 keygroup = t.keygroup;
                 size = t.size;
-                //selected = t.keygroup[0];
-            }
-
-            public Key Selected
-            {
-                get { return selected; }
-                set { selected = value; OnPropertyChanged("Selected"); }
             }
 
             public List<Key> KeyGroup
@@ -81,7 +67,6 @@ namespace LeapIN.Interface
             keys = new List<KeySet>();
             capskeys = new List<KeySet>();
             speckeys = new List<KeySet>();
-            inputKeys = new List<Key>();
 
             InitialiseKeyboard();
 
@@ -97,19 +82,6 @@ namespace LeapIN.Interface
                 {
                     currentkeys = value;
                     OnPropertyChanged("SKeys");
-                }
-            }
-        }
-
-        public string CurrentWord
-        {
-            get { return currentWord; }
-            set
-            {
-                if (currentWord != value)
-                {
-                    currentWord = value;
-                    OnPropertyChanged("CurrentWord");
                 }
             }
         }
@@ -142,59 +114,24 @@ namespace LeapIN.Interface
             }
         }
 
-        public ICommand DeleteCommand
+        public ICommand ShiftCommand
         {
             get
             {
-                if (deleteCommand == null)
+                if (shiftCommand == null)
                 {
-                    deleteCommand = new RelayCommand(
-                        param => BackSpace()
-                    );
-                }
-                return deleteCommand;
-            }
-        }
-
-        public ICommand NextKeyCommand
-        {
-            get
-            {
-                if (nextKeyCommand == null)
-                {
-                    nextKeyCommand = new RelayCommand(
-                        param => SwitchSelected(param)
-                    );
-                }
-                return nextKeyCommand;
-            }
-        }
-
-        public ICommand SwitchModeCommand
-        {
-            get
-            {
-                if (switchModeCommand == null)
-                {
-                    switchModeCommand = new RelayCommand(
+                    shiftCommand = new RelayCommand(
                         param => SwitchMode()
                     );
                 }
-                return switchModeCommand;
+                return shiftCommand;
             }
         }
-
+        /// <summary>
+        /// Creates the three sets of keys for displayed the virtual keyboard
+        /// </summary>
         void InitialiseKeyboard()
         {
-            // Create the key code array
-            keycodes = new byte[255];
-
-            // A - Z
-            for (int i = 0; i < 254; i++)
-            {
-                keycodes[i] = (byte)(i + 1);
-            }
-
             CreateAlphabet(97, ref keys);
             CreateAlphabet(65, ref capskeys);
             CreateSpecial();
@@ -225,22 +162,25 @@ namespace LeapIN.Interface
             }
 
             CreateKeyGroup(new char[] { '.', ',', '\'' }, new int[] { 190, 188, 222 }, 3, ref list);
-            CreateKeyGroup(new char[] { '!', '?' }, new int[] { 49, 191, 7 }, 2, ref list);
+            CreateKeyGroup(new char[] { '!', '?', '@' }, new int[] { 49, 191, 222 }, 3, ref list);
         }
 
-        // Adds all non alphabet characters to a separate set of key groups
+        /// <summary>
+        /// Adds all non alphabet characters to a separate set of key groups
+        /// </summary>
         void CreateSpecial()
         {
-            CreateKeyGroup(new char[] { '1', '@', ':', ';' }, new int[] { 49, 222, 186, 186 }, 4, ref speckeys); //  1 @ : ;
+            CreateKeyGroup(new char[] { '1', ':', ';' }, new int[] { 49, 186, 186 }, 3, ref speckeys); //  1 @ : ;
             CreateKeyGroup(new char[] { '2', '"', '#' }, new int[] { 50, 50, 39 }, 3, ref speckeys);// 2 " #
             CreateKeyGroup(new char[] { '3', '£', '&' }, new int[] { 51, 39, 55 }, 3, ref speckeys);// 3 £ &
-            CreateKeyGroup(new char[] { '4', '/', '\\' }, new int[] { 52, 191, 220 }, 3, ref speckeys);// 4 / \
+            CreateKeyGroup(new char[] { '4', '/', '\\'}, new int[] { 52, 191, 220 }, 3, ref speckeys);// 4 / \
             CreateKeyGroup(new char[] { '5', '%', '_' }, new int[] { 53, 53, 189 }, 3, ref speckeys);// 5 % _
-            CreateKeyGroup(new char[] { '6', '^' }, new int[] { 54, 54 }, 2, ref speckeys);// 6 ^ 
-            CreateKeyGroup(new char[] { '7', '-', '+' }, new int[] { 55, 189, 187 }, 3, ref speckeys);// 7 - +
-            CreateKeyGroup(new char[] { '8', '*', '=' }, new int[] { 56, 56, 187 }, 3, ref speckeys);// 8 * =
-            CreateKeyGroup(new char[] { '9', '(', ')', '{', '}', }, new int[] { 57, 57, 39, 219, 221, }, 5, ref speckeys);// 9 ( ) { }
-            CreateKeyGroup(new char[] { '0', '[', ']', '<', '>' }, new int[] { 39, 219, 221, 188, 190 }, 5, ref speckeys);// 0 [ ] < >
+            CreateKeyGroup(new char[] { '6', '^', '-' }, new int[] { 54, 54, 189 }, 3, ref speckeys);// 6 ^ 
+            CreateKeyGroup(new char[] { '7', '+', '=' }, new int[] { 55, 187, 187 }, 3, ref speckeys);// 7 - +
+            CreateKeyGroup(new char[] { '8', '*', '(' }, new int[] { 56, 56, 57 }, 3, ref speckeys);// 8 * =
+            CreateKeyGroup(new char[] { '9', ')', '[' }, new int[] { 57, 39, 219 }, 3, ref speckeys);// 9 ( ) { }
+            CreateKeyGroup(new char[] { '0', ']', '<' }, new int[] { 39, 219, 221 }, 3, ref speckeys);// 0 [ ] < >
+            CreateKeyGroup(new char[] { '{', '}', '>' }, new int[] { 219, 221, 190 }, 3, ref speckeys);// 9 ( ) { }
         }
 
         /// <summary>
@@ -259,25 +199,9 @@ namespace LeapIN.Interface
             set.Add(new KeySet(temp));
         }
 
-        void SwitchSelected(object o)
-        {
-            KeySet t = (KeySet)o;
-
-            // Find the current index of the selected
-            int i = t.keygroup.IndexOf(t.selected);
-
-            if (i == (t.size - 1))
-            {
-                i = 0;
-            }
-            else
-            {
-                i += 1;
-            }
-
-            t.Selected = t.keygroup[i];
-        }
-
+        /// <summary>
+        /// Shifts the keyboard into upper case or special
+        /// </summary>
         void SwitchMode()
         {
             if (SKeys == keys)
@@ -288,21 +212,21 @@ namespace LeapIN.Interface
                 SKeys = keys;
         }
 
+        /// <summary>
+        /// Takes a key object and passes it along to be pressed
+        /// </summary>
         void InputKey(object o)
         {
             Key pressed = (Key)o;
-            CurrentWord += pressed.k;
-            inputKeys.Add(pressed);
+            SendKey(pressed.code);
         }
 
+        /// <summary>
+        /// Method to activate important keys such as space or enter
+        /// </summary>
         void SendWord(object n)
         {
             string type = (string)n;
-
-            foreach (Key k in inputKeys)
-            {
-                SendKey(k.code);
-            }
 
             switch (type)
             {
@@ -312,14 +236,17 @@ namespace LeapIN.Interface
                 case "Enter":
                     SendKey((ushort)0x0D);
                     break;
+                case "Backspace":
+                    SendKey((ushort)0x08);
+                    break;
                 default:
                     break;
             }
-
-            inputKeys.Clear();
-            CurrentWord = "";
         }
 
+        /// <summary>
+        /// Emulates the key press event using the virtual key codes
+        /// </summary>
         void SendKey(ushort code)
         {
             Win32Services.INPUT structInput;
@@ -337,19 +264,6 @@ namespace LeapIN.Interface
 
             structInput.ki.dwFlags = Win32Services.KEYEVENTF_KEYUP;
             Win32Services.SendInput(1, ref structInput, Marshal.SizeOf(structInput));
-        }
-
-        void BackSpace()
-        {
-            if (CurrentWord != "" && CurrentWord != null)
-            {
-                inputKeys.RemoveAt(inputKeys.Count - 1);
-                CurrentWord = CurrentWord.Remove(CurrentWord.Length - 1);
-            }
-            else
-            {
-                SendKey((ushort)0x08);
-            }
         }
     }
 }

@@ -11,6 +11,7 @@
     <Grid>
 
         <!-- List box for the modes along the bottom -->
+        
         <ListBox ItemsSource="{Binding Mouse.MouseModes}" SelectedItem="{Binding Mouse.SelectedMode}" Height="40" VerticalAlignment="Bottom"
                  HorizontalAlignment="Center" Style="{StaticResource HorizontalListBoxStyle}" 
                  ItemContainerStyle="{StaticResource MenuItemStyle}">
@@ -35,6 +36,10 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
+        
+        <!-- End -->
+        
+        <!-- Mouse that lights up on click events -->
 
         <Border x:Name="mouse" SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Bottom" 
                 Margin="15" Height="95" Width="60" CornerRadius="20" BorderBrush="Black" BorderThickness="1">
@@ -43,53 +48,59 @@
                     <Setter Property="Background" Value="#FCCC"/>
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding Mouse.Touching}" Value="True">
-                            <Setter Property="Background" Value="#F0C0"/>
+                            <Setter Property="Background" Value="{StaticResource OLMouseTouching}"/>
                         </DataTrigger>
                         <DataTrigger Binding="{Binding Mouse.Touching}" Value="False">
-                            <Setter Property="Background" Value="#FC00"/>
+                            <Setter Property="Background" Value="{StaticResource OLMouseNotTouching}"/>
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
             </Border.Style>
         </Border>
+        
         <Border SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Bottom"
                 Margin="15,60" Height="50" Width="30" CornerRadius="20,0,0,0" BorderBrush="Black" BorderThickness="1" />
         <Border SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Bottom"
                 Margin="45,0,0,60" Height="50" Width="30" CornerRadius="0,20,0,0" BorderBrush="Black" BorderThickness="1" />
         <Border SnapsToDevicePixels="True" HorizontalAlignment="Left" VerticalAlignment="Bottom"
                 Margin="37,65" Height="30" Width="15" CornerRadius="5" BorderBrush="Black" BorderThickness="1" Background="{Binding Background, ElementName=mouse}"/>
+
+        <!-- End -->
+        
+        <!-- Keyboard control -->
+        
+        <ItemsControl ItemsSource="{Binding Keyboard.SKeys}" Style="{StaticResource KeyboardStyle}">
             
-
-        <!-- Box displaying the current typed word -->
-        <Border Background="White" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="80" Width="300" Margin="100, 15">
-            <TextBlock Text="{Binding Keyboard.CurrentWord}" FontSize="36"  VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        </Border>
-
-        <ItemsControl ItemsSource="{Binding Keyboard.SKeys}" HorizontalAlignment="Right" VerticalAlignment="Center">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Style="{x:Null}" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Grid Height="50" SnapsToDevicePixels="True" Background="#FAAA">
-                        <!--<Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>-->
+                    <Grid Height="50" SnapsToDevicePixels="True">
+                        <!-- Inner list for each item or line of keys -->
                         <ListView ItemsSource="{Binding KeyGroup}" Style="{StaticResource HorizontalListStyle}">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
                                     <Grid Height="50" Width="50">
-                                        <Button Content="{Binding Name}" Command="{Binding DataContext.Keyboard.InputCommand, RelativeSource={RelativeSource FindAncestor, AncestorLevel=2, AncestorType={x:Type ItemsControl}}}" CommandParameter="{Binding }" Style="{StaticResource KeyButtonStyle}" />
+                                        <Button Content="{Binding Name}" 
+                                                Command="{Binding DataContext.Keyboard.InputCommand, RelativeSource={RelativeSource FindAncestor, AncestorLevel=2, AncestorType={x:Type ItemsControl}}}" 
+                                                CommandParameter="{Binding }" Style="{StaticResource KeyButtonStyle}" />
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
 
                             <ListView.ItemContainerStyle>
-                                <Style TargetType="ListViewItem">
+                                <Style TargetType="{x:Type ListViewItem}">
                                     <Setter Property="Padding" Value="0"/>
                                 </Style>
                             </ListView.ItemContainerStyle>
                         </ListView>
-                        <!--<Button Content="{Binding Selected.Name}" Command="{Binding DataContext.Keyboard.InputCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" CommandParameter="{Binding Selected}" Style="{StaticResource KeyButtonStyle}" />-->
-                        <!--<Button Grid.Column="1" Content=">" Command="{Binding DataContext.Keyboard.NextKeyCommand, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}}" CommandParameter="{Binding }" Style="{StaticResource KeyButtonStyle}" />-->
+                        <!-- End -->
+                        
+                        <!-- Triggers to monitor when the cursor is over controls -->
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="MouseEnter">
                                 <ex:SetPropertyAction PropertyName="MouseOverControl"
@@ -102,28 +113,19 @@
                                                       PropertyValue="False"/>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
+                        <!-- End -->
                     </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        
+        <!-- End -->
 
-        <Button Content="Special" Command="{Binding Keyboard.SwitchModeCommand}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,55" Width="100" Height="60" Style="{StaticResource KeyButtonStyle}"/>
+        <!-- Extra Keys -->
+        <Button Content="Shift" Command="{Binding Keyboard.ShiftCommand}" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,55" Width="100" Height="60" Style="{StaticResource KeyButtonStyle}"/>
         <Button Content="Enter" Command="{Binding Keyboard.PostCommand}" CommandParameter="{Binding Content, RelativeSource={RelativeSource Self}}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,5" Width="150" Height="60" Style="{StaticResource KeyButtonStyle}"/>
-        <Button Content="Backspace" Command="{Binding Keyboard.DeleteCommand}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0, 70" Width="150" Height="60" Style="{StaticResource KeyButtonStyle}"/>
+        <Button Content="Backspace" Command="{Binding Keyboard.PostCommand}" CommandParameter="{Binding Content, RelativeSource={RelativeSource Self}}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0, 70" Width="150" Height="60" Style="{StaticResource KeyButtonStyle}"/>
         <Button Content="Space" Command="{Binding Keyboard.PostCommand}" CommandParameter="{Binding Content, RelativeSource={RelativeSource Self}}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="155, 5" Width="250" Height="60" Style="{StaticResource KeyButtonStyle}"/>
-        <!--<Button Content="Shift" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="410, 5" Width="150" Height="60" Style="{StaticResource KeyButtonStyle}"/>-->
 
-        <!--<Button Content="{Binding Mode}" Command="{Binding ChangeClick}" Height="50" Width="200" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-            <i:Interaction.Triggers>
-                <i:EventTrigger EventName="MouseEnter">
-                    <ex:SetPropertyAction PropertyName="MouseOverControl" TargetObject="{Binding}"
-                                       PropertyValue="true" />
-                </i:EventTrigger>
-                <i:EventTrigger EventName="MouseLeave">
-                    <ex:SetPropertyAction PropertyName="MouseOverControl" TargetObject="{Binding}"
-                                       PropertyValue="false"/>
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
-        </Button>-->
     </Grid>
 </Window>

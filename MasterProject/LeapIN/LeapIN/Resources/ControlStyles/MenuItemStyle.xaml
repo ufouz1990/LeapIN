@@ -3,8 +3,8 @@
     
     <Style x:Key="MenuItemStyle" TargetType="{x:Type ListBoxItem}">
         <Setter Property="Padding" Value="0"/>
-        <Setter Property="Foreground" Value="#F111"/>
-        <Setter Property="Background" Value="#FFE0E0E0"/>
+        <Setter Property="Foreground" Value="{DynamicResource OLTextColour}"/>
+        <Setter Property="Background" Value="{DynamicResource OLButtonBackground}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
@@ -13,10 +13,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="#FCCC"/>
+                            <Setter Property="Background" Value="{DynamicResource OLButtonHover}"/>
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="#F888"/>
+                            <Setter Property="Background" Value="{DynamicResource OLButtonPress}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

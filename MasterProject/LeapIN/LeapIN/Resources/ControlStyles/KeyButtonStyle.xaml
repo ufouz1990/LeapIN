@@ -2,9 +2,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
     <Style x:Key="KeyButtonStyle" TargetType="{x:Type Button}">
-        <Setter Property="FontSize" Value="24"/>
-        <Setter Property="Foreground" Value="#F111" />
-        <Setter Property="Background" Value="#FFE0E0E0" />
+        <Setter Property="FontSize" Value="24"/> <!-- Bind to this to scale text for larger/smaller screens -->
+        <Setter Property="Foreground" Value="{DynamicResource OLTextColour}" />
+        <Setter Property="Background" Value="{DynamicResource OLButtonBackground}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -18,10 +18,10 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="#FCCC"/>
+                            <Setter Property="Background" Value="{DynamicResource OLButtonHover}"/>
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="#F888"/>
+                            <Setter Property="Background" Value="{DynamicResource OLButtonPress}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

@@ -34,7 +34,7 @@ namespace LeapIN.Interface
             mouse = new PointerModule();
             keyboard = new KeyboardModule();
 
-            // Get the screen size
+            // Get the screen size - could scale based on a switch statement from this, set some properties etc
             screenWidth = SystemParameters.PrimaryScreenWidth;
             screenHeight = SystemParameters.PrimaryScreenHeight;
         }

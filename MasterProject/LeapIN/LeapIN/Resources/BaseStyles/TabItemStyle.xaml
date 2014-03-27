@@ -1,13 +1,13 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     
-    <Style x:Key="TabItemStyle" TargetType="{x:Type TabItem}">
+    <Style TargetType="{x:Type TabItem}">
         <Setter Property="Margin" Value="0"/>
         <Setter Property="Padding" Value="0"/>
         <Setter Property="FontSize" Value="14px"/>
         <Setter Property="Width" Value="160px"/>
         <Setter Property="Height" Value="40px"/>
-        <Setter Property="Foreground" Value="#F111"/>
+        <Setter Property="Foreground" Value="{DynamicResource CPTextColour}"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
@@ -18,10 +18,10 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Border" Property="Background" Value="#FCCC"/> <!-- 444 -->
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource CPButtonHover}"/>
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="Border" Property="Background" Value="#F888"/> <!-- 666 -->
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource CPButtonPress}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

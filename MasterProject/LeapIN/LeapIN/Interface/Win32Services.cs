@@ -127,6 +127,7 @@ namespace LeapIN.Interface
 
         /* DLL IMPORTS */
 
+        // First four functions required to resize the overlay correctly and disable activation
         [DllImport("user32.dll")]
         public static extern IntPtr SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
@@ -149,6 +150,8 @@ namespace LeapIN.Interface
         [DllImport("user32.dll")]
         static extern void mouse_event(uint dwFlags, uint dx, uint dy, int cButtons, uint dwExtraInfo);
 
+
+        // Final imports required to pass virtual keyboard inputs
         [DllImport("user32.dll")]
         public static extern uint SendInput(uint nInputs, ref INPUT pInputs, int cbSize);
 
@@ -158,6 +161,10 @@ namespace LeapIN.Interface
 
         /* DLL Method Calls */
 
+        /// <summary>
+        /// Disables the activation flag on a window and resizes to fill up to the taskbar
+        /// </summary>
+        /// <param name="helper"></param>
         public static void SetupWindow(WindowInteropHelper helper)
         {
             HwndSource.FromHwnd(helper.Handle).AddHook(new HwndSourceHook(WindowProc));

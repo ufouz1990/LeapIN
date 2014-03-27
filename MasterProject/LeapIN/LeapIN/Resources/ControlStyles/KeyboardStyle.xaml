@@ -1,0 +1,9 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style x:Key="KeyboardStyle" TargetType="{x:Type ItemsControl}">
+        <Setter Property="HorizontalAlignment" Value="Right"/> <!-- To change keyboard position from settings bind these properties to something! -->
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Background" Value="{DynamicResource OLKBBackground}"/>
+        
+    </Style>
+</ResourceDictionary>
