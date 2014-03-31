@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 
 using LeapIN.Extras;
-using System.Runtime.InteropServices;
+
 
 namespace LeapIN.Interface
 {
@@ -143,6 +144,10 @@ namespace LeapIN.Interface
         void CreateAlphabet(int start, ref List<KeySet> list)
         {
             int count = 0;
+            int codeVal = 65;
+
+            if (start == 65)
+                codeVal += 256;
 
             for (int i = start; i < start+26; i = i + 3)
             {
@@ -153,7 +158,7 @@ namespace LeapIN.Interface
                     if (count == 26)
                         break;
 
-                    temp.keygroup.Add(new Key((char)(i + j), 65 + count));
+                    temp.keygroup.Add(new Key((char)(i + j), codeVal + count));
                     temp.size += 1;
                     count++;
                 }
@@ -161,8 +166,8 @@ namespace LeapIN.Interface
                 list.Add(new KeySet(temp));
             }
 
-            CreateKeyGroup(new char[] { '.', ',', '\'' }, new int[] { 190, 188, 222 }, 3, ref list);
-            CreateKeyGroup(new char[] { '!', '?', '@' }, new int[] { 49, 191, 222 }, 3, ref list);
+            CreateKeyGroup(new char[] { '.', ',', '\'' }, new int[] { 190, 188, 192 }, 3, ref list);
+            CreateKeyGroup(new char[] { '!', '?', '@' }, new int[] { 49 + 256, 191 + 256, 192 + 256 }, 3, ref list);
         }
 
         /// <summary>
@@ -170,17 +175,17 @@ namespace LeapIN.Interface
         /// </summary>
         void CreateSpecial()
         {
-            CreateKeyGroup(new char[] { '1', ':', ';' }, new int[] { 49, 186, 186 }, 3, ref speckeys); //  1 @ : ;
-            CreateKeyGroup(new char[] { '2', '"', '#' }, new int[] { 50, 50, 39 }, 3, ref speckeys);// 2 " #
-            CreateKeyGroup(new char[] { '3', '£', '&' }, new int[] { 51, 39, 55 }, 3, ref speckeys);// 3 £ &
+            CreateKeyGroup(new char[] { '1', ';', ':' }, new int[] { 49, 186, (186+256) }, 3, ref speckeys); //  1 ; :
+            CreateKeyGroup(new char[] { '2', '"', '#' }, new int[] { 50, (50+256), 222 }, 3, ref speckeys);// 2 " #
+            CreateKeyGroup(new char[] { '3', '£', '&' }, new int[] { 51, (51+256), (55+256) }, 3, ref speckeys);// 3 £ &
             CreateKeyGroup(new char[] { '4', '/', '\\'}, new int[] { 52, 191, 220 }, 3, ref speckeys);// 4 / \
-            CreateKeyGroup(new char[] { '5', '%', '_' }, new int[] { 53, 53, 189 }, 3, ref speckeys);// 5 % _
-            CreateKeyGroup(new char[] { '6', '^', '-' }, new int[] { 54, 54, 189 }, 3, ref speckeys);// 6 ^ 
-            CreateKeyGroup(new char[] { '7', '+', '=' }, new int[] { 55, 187, 187 }, 3, ref speckeys);// 7 - +
-            CreateKeyGroup(new char[] { '8', '*', '(' }, new int[] { 56, 56, 57 }, 3, ref speckeys);// 8 * =
-            CreateKeyGroup(new char[] { '9', ')', '[' }, new int[] { 57, 39, 219 }, 3, ref speckeys);// 9 ( ) { }
-            CreateKeyGroup(new char[] { '0', ']', '<' }, new int[] { 39, 219, 221 }, 3, ref speckeys);// 0 [ ] < >
-            CreateKeyGroup(new char[] { '{', '}', '>' }, new int[] { 219, 221, 190 }, 3, ref speckeys);// 9 ( ) { }
+            CreateKeyGroup(new char[] { '5', '%', '_' }, new int[] { 53, (53+256), (189+256) }, 3, ref speckeys);// 5 % _
+            CreateKeyGroup(new char[] { '6', '^', '-' }, new int[] { 54, (54+256), 189 }, 3, ref speckeys);// 6 ^ -
+            CreateKeyGroup(new char[] { '7', '+', '=' }, new int[] { 55, (187+256), 187 }, 3, ref speckeys);// 7 + =
+            CreateKeyGroup(new char[] { '8', '*', '(' }, new int[] { 56, (56+256), (57+256) }, 3, ref speckeys);// 8 * (
+            CreateKeyGroup(new char[] { '9', ')', '[' }, new int[] { 57, (48+256), 219 }, 3, ref speckeys);// 9 ) [
+            CreateKeyGroup(new char[] { '0', ']', '<' }, new int[] { 48, 221, (188+256) }, 3, ref speckeys);// 0 ] <
+            CreateKeyGroup(new char[] { '{', '}', '>' }, new int[] { (219+256), (221+256), (190+256) }, 3, ref speckeys);// { } >
         }
 
         /// <summary>
@@ -258,12 +263,35 @@ namespace LeapIN.Interface
             structInput.ki.dwFlags = 0;
             structInput.ki.dwExtraInfo = 0;
 
-            // set to the virtual key code
-            structInput.ki.wVk = code;
-            Win32Services.SendInput(1, ref structInput, Marshal.SizeOf(structInput));
+            if (code < 256)
+            {
+                // set to the virtual key code
+                structInput.ki.wVk = code;
+                Input(ref structInput);
 
-            structInput.ki.dwFlags = Win32Services.KEYEVENTF_KEYUP;
-            Win32Services.SendInput(1, ref structInput, Marshal.SizeOf(structInput));
+                structInput.ki.dwFlags = Win32Services.KEYEVENTF_KEYUP;
+                Input(ref structInput);
+            }
+            else // shift
+            {
+                code -= 256;
+                structInput.ki.wVk = 16; // SHIFT CODE
+                Input(ref structInput);
+
+                structInput.ki.wVk = code;
+                Input(ref structInput);
+                structInput.ki.dwFlags = Win32Services.KEYEVENTF_KEYUP;
+
+                Input(ref structInput);
+                structInput.ki.wVk = 16;
+
+                Input(ref structInput);
+            }
+        }
+
+        void Input(ref Win32Services.INPUT sI)
+        {
+            Win32Services.SendInput(1, ref sI, Marshal.SizeOf(sI));
         }
     }
 }
