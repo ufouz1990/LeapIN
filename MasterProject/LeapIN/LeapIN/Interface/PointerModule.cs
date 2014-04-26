@@ -66,8 +66,8 @@ namespace LeapIN.Interface
             MouseModes.Add(new PointerMode("Right", MouseFlags.RIGHTDOWN | MouseFlags.RIGHTUP, 3, 0)); // index 1
             MouseModes.Add(new PointerMode("Double", MouseFlags.LEFTDOWN | MouseFlags.LEFTUP, 1, 0)); // 2
             MouseModes.Add(new PointerMode("Drag", MouseFlags.LEFTDOWN, 2, 0)); // 3
-            MouseModes.Add(new PointerMode("Scroll Up", MouseFlags.WHEEL, 4, 10)); // 4
-            MouseModes.Add(new PointerMode("Scroll Down", MouseFlags.WHEEL, 4, -10)); //5
+            MouseModes.Add(new PointerMode("Up", MouseFlags.WHEEL, 4, 10)); // 4
+            MouseModes.Add(new PointerMode("Down", MouseFlags.WHEEL, 4, -10)); //5
 
             // Set to left click by default
             SelectedMode = MouseModes[0]; 

@@ -4,7 +4,8 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBox}">
-                    <StackPanel Orientation="Horizontal" IsItemsHost="True" Style="{x:Null}" />
+                    <StackPanel Orientation="Horizontal" IsItemsHost="True" Style="{x:Null}" SnapsToDevicePixels="True" />
+                    <!--<UniformGrid Columns="6" IsItemsHost="True" SnapsToDevicePixels="True" />-->
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

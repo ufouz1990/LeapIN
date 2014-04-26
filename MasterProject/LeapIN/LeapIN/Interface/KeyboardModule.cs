@@ -17,7 +17,7 @@ namespace LeapIN.Interface
         List<KeySet> speckeys; // Number Keys etc
 
         ICommand inputCommand; // On a char
-        ICommand postCommand; // Space/Enter/Backspace
+        ICommand actionCommand; // Space/Enter/Backspace
         ICommand shiftCommand;
 
         // struct to hold the definition of a key:
@@ -101,33 +101,20 @@ namespace LeapIN.Interface
             }
         }
 
-        public ICommand PostCommand
+        public ICommand ActionCommand
         {
             get
             {
-                if (postCommand == null)
+                if (actionCommand == null)
                 {
-                    postCommand = new RelayCommand(
-                        param => SendWord(param)
+                    actionCommand = new RelayCommand(
+                        param => ActionKey(param)
                     );
                 }
-                return postCommand;
+                return actionCommand;
             }
         }
 
-        public ICommand ShiftCommand
-        {
-            get
-            {
-                if (shiftCommand == null)
-                {
-                    shiftCommand = new RelayCommand(
-                        param => SwitchMode()
-                    );
-                }
-                return shiftCommand;
-            }
-        }
         /// <summary>
         /// Creates the three sets of keys for displayed the virtual keyboard
         /// </summary>
@@ -205,19 +192,6 @@ namespace LeapIN.Interface
         }
 
         /// <summary>
-        /// Shifts the keyboard into upper case or special
-        /// </summary>
-        void SwitchMode()
-        {
-            if (SKeys == keys)
-                SKeys = capskeys;
-            else if (SKeys == capskeys)
-                SKeys = speckeys;
-            else
-                SKeys = keys;
-        }
-
-        /// <summary>
         /// Takes a key object and passes it along to be pressed
         /// </summary>
         void InputKey(object o)
@@ -229,7 +203,7 @@ namespace LeapIN.Interface
         /// <summary>
         /// Method to activate important keys such as space or enter
         /// </summary>
-        void SendWord(object n)
+        void ActionKey(object n)
         {
             string type = (string)n;
 
@@ -244,9 +218,25 @@ namespace LeapIN.Interface
                 case "Backspace":
                     SendKey((ushort)0x08);
                     break;
+                case "Shift":
+                    ShiftKeys();
+                    break;
                 default:
                     break;
             }
+        }
+
+        /// <summary>
+        /// Shifts the keyboard into upper case or special
+        /// </summary>
+        void ShiftKeys()
+        {
+            if (SKeys == keys)
+                SKeys = capskeys;
+            else if (SKeys == capskeys)
+                SKeys = speckeys;
+            else
+                SKeys = keys;
         }
 
         /// <summary>
